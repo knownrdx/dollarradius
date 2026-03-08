@@ -1,0 +1,34 @@
+version: "3"
+services:
+  radius-mysql:
+    image: mariadb:10
+    container_name: radius-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=radius
+      - MYSQL_USER=radius
+      - MYSQL_PASSWORD=radiusdbpw
+      - MYSQL_ROOT_PASSWORD=radiusrootdbpw
+    volumes:
+      - radius-mysql:/var/lib/mysql
+
+  radius-web:
+    image: boro/freeradius-daloradius:latest
+    container_name: radius-web
+    restart: unless-stopped
+    depends_on:
+      - radius-mysql
+    ports:
+      - "8888:80"
+    environment:
+      - MYSQL_HOST=radius-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=radius
+      - MYSQL_USER=radius
+      - MYSQL_PASS=radiusdbpw
+      - MYSQL_INIT_DATABASE=true
+      - CLIENT_SECRET=testing123
+      - CLIENT_NET1=0.0.0.0/0
+
+volumes:
+  radius-mysql:
