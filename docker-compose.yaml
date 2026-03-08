@@ -19,10 +19,7 @@ services:
     depends_on:
       - radius-mysql
     ports:
-      - "8080:80"
-    expose:
-      - "1812/udp"
-      - "1813/udp"
+      - "8888:80"
     environment:
       - MYSQL_HOST=radius-mysql
       - MYSQL_PORT=3306
