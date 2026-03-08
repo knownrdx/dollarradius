@@ -12,12 +12,14 @@ services:
     volumes:
       - radius-mysql:/var/lib/mysql
 
-  radius:
-    image: 3x3cut0r/freeradius:latest
-    container_name: radius
+  radius-web:
+    image: boro/freeradius-daloradius:latest
+    container_name: radius-web
     restart: unless-stopped
     depends_on:
       - radius-mysql
+    ports:
+      - "8080:80"
     expose:
       - "1812/udp"
       - "1813/udp"
@@ -26,39 +28,10 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=radius
       - MYSQL_USER=radius
-      - MYSQL_PASSWORD=radiusdbpw
-      - DEFAULT_CLIENT_SECRET=testing123
-    volumes:
-      - radius-data:/data
-      - radius-logs:/var/log/freeradius
-
-  radius-web:
-    image: 3x3cut0r/daloradius:latest
-    container_name: radius-web
-    restart: unless-stopped
-    depends_on:
-      - radius
-      - radius-mysql
-    ports:
-      - "8080:80"
-    environment:
-      - MYSQL_HOST=radius-mysql
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=radius
-      - MYSQL_USER=radius
-      - MYSQL_PASSWORD=radiusdbpw
-      - DEFAULT_CLIENT_SECRET=testing123
-      - DEFAULT_FREERADIUS_SERVER=radius
-      - MAIL_SMTPADDR=127.0.0.1
-      - MAIL_PORT=25
-      - MAIL_FROM=root@daloradius.xdsl.by
-      - MAIL_AUTH=
-    volumes:
-      - radius-web:/data
-      - radius-logs:/var/log/freeradius
+      - MYSQL_PASS=radiusdbpw
+      - MYSQL_INIT_DATABASE=true
+      - CLIENT_SECRET=testing123
+      - CLIENT_NET1=0.0.0.0/0
 
 volumes:
   radius-mysql:
-  radius-data:
-  radius-logs:
-  radius-web:
